@@ -2,7 +2,7 @@
 <config>
 	<modules>
 		<CosmicCart_Integration>
-			<version>2.0.5</version>
+			<version>2.0.7</version>
 		</CosmicCart_Integration>
 	</modules>
 
@@ -24,6 +24,9 @@
 					<batch>
 						<table>cosmiccart_batch_status</table>
 					</batch>
+                    <log>
+						<table>cosmiccart_log</table>
+					</log>
 				</entities>
 			</cosmiccart_integration_resource>
 		</models>
@@ -93,7 +96,7 @@
 			<adminhtml>
 				<args>
 					<modules>
-						<integration before="Mage_Adminhtml">CosmicCart_Integration_Adminhtml</integration>
+						<cosmiccart_integration before="Mage_Adminhtml">CosmicCart_Integration_Adminhtml</cosmiccart_integration>
 					</modules>
 				</args>
 			</adminhtml>
@@ -104,14 +107,14 @@
 			<resources>
 				<admin>
 					<children>
-						<integration translate="title" module="cosmiccart_integration">
+						<cosmiccart_integration translate="title" module="cosmiccart_integration">
 							<children>
 								<integration_activation>
 									<title>Activation</title>
 								</integration_activation>
 							</children>
 							<sort_order>1</sort_order>
-						</integration>
+						</cosmiccart_integration>
 						<system>
 							<children>
 								<config>
@@ -142,23 +145,28 @@
 						<sort_order>2</sort_order>
 						<action>adminhtml/integration_batch</action>
 					</integration_batch>
+					<logviewer module="cosmiccart_integration">
+						<title>Log Viewer</title>
+						<sort_order>3</sort_order>
+						<action>adminhtml/cosmiccart_logger</action>
+					</logviewer>
 				</children>
 			</cosmiccart>
 		</menu>
 		<translate>
 			<modules>
-				<integration>
+				<cosmiccart_integration>
 					<files>
 						<default>CosmicCart_Integration.csv</default>
 					</files>
-				</integration>
+				</cosmiccart_integration>
 			</modules>
 		</translate>
 		<layout>
 			<updates>
-				<integration>
+				<cosmiccart_integration>
 					<file>cosmiccart/integration.xml</file>
-				</integration>
+				</cosmiccart_integration>
 			</updates>
 		</layout>
 	</adminhtml>

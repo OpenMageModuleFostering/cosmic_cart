@@ -42,8 +42,10 @@ class CosmicCart_Integration_Model_Exporter
 
         //Prevent duplicated CRON running same time
         if (self::$_batchGenerateCron == true) {
+            Mage::helper('cosmiccart_integration')->log('Duplicated cron job already running', 4, 'exporter');
             return $this;
         }
+        Mage::helper('cosmiccart_integration')->log('Generating batch', 4, 'exporter');
         $this->exportCatalog('new');
 
         self::$_batchGenerateCron = true;
@@ -70,6 +72,7 @@ class CosmicCart_Integration_Model_Exporter
             $this->exportCatalog();
         } Catch (Exception $e) {
             $process->setStatus($status);
+            Mage::helper('cosmiccart_integration')->log($e, 1, 'exporter');
             Mage::throwException($e);
         }
 
@@ -159,6 +162,7 @@ class CosmicCart_Integration_Model_Exporter
                 $row['num_of_times_retried'] = $row['num_of_times_retried'] + 1;
                 $data['num_of_times_retried'] = $row['num_of_times_retried'];
                 $data['comment'] = $error->getMessage();
+                Mage::helper('cosmiccart_integration')->log($error->getMessage(), 1, 'exporter');
 
                 $where = $this->_getWriteConnection()->quoteInto('batch_id =?', $row['batch_id']);
                 $this->_getWriteConnection()->update($this->_getTableName('cosmiccart_integration/batch'), $data, $where);
@@ -178,6 +182,7 @@ class CosmicCart_Integration_Model_Exporter
 
     private function _handleStage0($row, $store)
     {
+        Mage::helper('cosmiccart_integration')->log('Beginning stage 0', 4, 'exporter');
         // First, let's find all the configurable products that are visible and enabled (PRODUCT)
         $configurables_collection = $this->_getConfigurablesCollection($store);
         $simple_collection = $this->_getSimplesCollection($store);
@@ -185,6 +190,9 @@ class CosmicCart_Integration_Model_Exporter
         // Now find out how much record is returning
         $configurables_collection_count = $configurables_collection->getSize();
         $simple_collection_count = $simple_collection->getSize();
+
+        Mage::helper('cosmiccart_integration')->log("Found $configurables_collection_count configurable products", 4, 'exporter');
+        Mage::helper('cosmiccart_integration')->log("Found $simple_collection_count simple products", 4, 'exporter');
 
         // Update the row count now
         $data = array();
@@ -206,6 +214,7 @@ class CosmicCart_Integration_Model_Exporter
 
     private function _handleStage1($row)
     {
+        Mage::helper('cosmiccart_integration')->log('Beginning stage 1', 4, 'exporter');
         $data = array();
         $data['current_stage'] = 2;
         $data['comment'] = 'Processing rows';
@@ -218,9 +227,13 @@ class CosmicCart_Integration_Model_Exporter
 
     private function _handleStage2($row, $store, $currency)
     {
+        Mage::helper('cosmiccart_integration')->log('Beginning stage 2', 4, 'exporter');
         // Process the export
         $configurables_collection = $this->_getConfigurablesCollection($store);
         $simple_collection = $this->_getSimplesCollection($store);
+
+        Mage::helper('cosmiccart_integration')->log('Found ' . $configurables_collection->getSize() . ' configurable products', 4, 'exporter');
+        Mage::helper('cosmiccart_integration')->log('Found ' . $simple_collection->getSize() . ' simple products', 4, 'exporter');
 
         // Work on configurable first
         try {
@@ -237,6 +250,7 @@ class CosmicCart_Integration_Model_Exporter
                 );
             }
         } catch (Exception $e) {
+            Mage::helper('cosmiccart_integration')->log(__FILE__ . ' ' . __LINE__ . ' ' . " Error: " . $e->getMessage(), 1, 'exporter');
             Mage::log(__FILE__ . ' ' . __LINE__ . ' ' . " Error: " . $e->getMessage() . " - " . time(), null, 'cosmiccart-export.log');
             Mage::getModel('cosmiccart_integration/mail')->sendEmail(
                 'cosmiccart_integration_import_exception_tpl',
@@ -268,6 +282,7 @@ class CosmicCart_Integration_Model_Exporter
             }
         } catch (Exception $e) {
             Mage::log(__FILE__ . ' ' . __LINE__ . ' ' . " Error: " . $e->getMessage() . " - " . time(), null, 'cosmiccart-export.log');
+            Mage::helper('cosmiccart_integration')->log(__FILE__ . ' ' . __LINE__ . ' ' . " Error: " . $e->getMessage(), 1, 'exporter');
             Mage::getModel('cosmiccart_integration/mail')->sendEmail(
                 'cosmiccart_integration_import_exception_tpl',
                 'api-fallback@cosmiccart.com',
@@ -298,6 +313,7 @@ class CosmicCart_Integration_Model_Exporter
 
     private function _handleStage3($row)
     {
+        Mage::helper('cosmiccart_integration')->log('Beginning stage 3', 4, 'exporter');
         // Merge the files
         // File path of final result
         $exportDir = $this->_getExportDir();
@@ -339,6 +355,8 @@ class CosmicCart_Integration_Model_Exporter
 
     private function _handleStage4($row, $client)
     {
+        Mage::helper('cosmiccart_integration')->log('Beginning stage 4', 4, 'exporter');
+
         $sftpServer = Mage::helper('cosmiccart_integration')->getSftpUrl();
 
         // Upload FTP
@@ -354,6 +372,8 @@ class CosmicCart_Integration_Model_Exporter
 
         $exportDir = $this->_getExportDir();
         $exportReadyFile = $exportDir . DS . $row['batch_id'] . '.gz';
+
+        Mage::helper('cosmiccart_integration')->log("Uploading $exportReadyFile", 4, 'exporter');
 
         $connection->put($sftpTargetFile, $exportReadyFile, NET_SFTP_LOCAL_FILE);
         $connection->disconnect();
@@ -463,6 +483,8 @@ class CosmicCart_Integration_Model_Exporter
      */
     private function exportCollection($store, $currency, $collectionCounter, $collection, $number_of_processed_row, $batchId, $isConfigurable)
     {
+        Mage::helper('cosmiccart_integration')->log('Beginning exportCollection', 4, 'exporter');
+
         $stopNow = false;
 
         $this->_exportStoreId = $store;
@@ -476,6 +498,7 @@ class CosmicCart_Integration_Model_Exporter
 
         do {
             Mage::log(__FILE__ . ' ' . __LINE__ . ' ' . "Batch Started: " . $number_of_processed_row . " - " . time(), null, 'cosmiccart-export.log');
+            Mage::helper('cosmiccart_integration')->log("Batch Started: $number_of_processed_row", 4, 'exporter');
 
             if (Mage::helper('cosmiccart_integration')->checkBatch($batchId) != $batchId) {
                 throw new Exception('User cancelled');
@@ -575,9 +598,23 @@ class CosmicCart_Integration_Model_Exporter
                 if ($attr) {
                     $child->setData($attributeCode, $attr);
                     $value = $child->getAttributeText($attributeCode);
+                    $optionPricing = null;
+                    foreach ($attribute['values'] as $option) {
+	                    if ($option['label'] == $value) {
+		                    $optionPricing = array(
+			                    'is_percent' => $option['is_percent'],
+			                    'pricing_value' => $option['pricing_value']
+		                    );
+	                    }
+                    }
                     $data[] = array(
                         'attribute' => $label,
-                        'value' => $value
+                        'value' => $value,
+                        'optionPricing' => $optionPricing,
+                        'parentPricing' => array(
+	                        'price' => $parent->getPrice(),
+	                        'specialPrice' => $parent->getSpecialPrice()
+                        )
                     );
                 }
             }
@@ -588,11 +625,14 @@ class CosmicCart_Integration_Model_Exporter
 
     public function exportCollectionCallback($product)
     {
+        Mage::helper('cosmiccart_integration')->log('Exporting ' . $product->getRawItemType() . ' sku ' . $product->getSku(), 4, 'exporter');
+
         $helper = Mage::helper('core');
         $storeId = $this->_exportStoreId;
 
-        $price = $product->getPrice() ? number_format($product->getPrice(), 2, ".", "") : null;
-        $specialPrice = $product->getSpecialPrice() ? number_format($product->getSpecialPrice(), 2, ".", "") : null;
+        $pricing = $this->_getSimplePrice($product);
+        $price = $pricing['price'];
+        $specialPrice = $pricing['specialPrice'];
 
         $brandType = $this->_getBrandAttributeType();
         if (is_null($brandType)) {
@@ -672,6 +712,10 @@ class CosmicCart_Integration_Model_Exporter
                 $attributes = $this->_getConfigurableAttributes($parentSku, $product);
                 $result['attributes'] = $attributes;
 
+                $pricing = $this->_getVariantPrice($product, $attributes);
+                $result['price'] = $pricing['price'];
+                $result['special_price'] = $pricing['price'];
+
                 //Handle product export here for each product
                 $this->_exportData[] = $helper->jsonEncode($result);
             }
@@ -686,6 +730,79 @@ class CosmicCart_Integration_Model_Exporter
         $this->_exportData[] = $helper->jsonEncode($prodResult);
 
         return $this;
+    }
+
+    /**
+     * Returns an array with the variant pricing depending on what pricing mode is set
+     *
+     * @param  $product
+     * @param  $attributes
+     * @return array $pricing
+    */
+    private function _getVariantPrice($product, $attributes)
+    {
+        $helper = Mage::helper('cosmiccart_integration');
+
+        if ($helper->getConfigurableProductPricingMode() == $helper->getConfigurableProductPricingOption()) {
+            return $this->_getConfigurableProductPricing($product, $attributes);
+        }
+
+        return $this->_getSimplePrice($product);
+    }
+
+    /**
+     * Returns an array with the Configurable Plus Option Pricing variant pricing
+     *
+     * @param  $product
+     * @param  $attributes
+     * @return array $pricing
+    */
+    private function _getConfigurableProductPricing($product, $attributes)
+    {
+        $price = $attributes[0]['parentPricing']['price'];
+        $specialPrice = $attributes[0]['parentPricing']['specialPrice'];
+
+        foreach ($attributes as $attribute) {
+            if ($attribute['optionPricing']['is_percent'] == 1) {
+                $price += ($price * $attribute['optionPricing']['pricing_value']);
+                $specialPrice += ($specialPrice * $attribute['optionPricing']['pricing_value']);
+            } else {
+                $price += $attribute['optionPricing']['pricing_value'];
+                $specialPrice += $attribute['optionPricing']['pricing_value'];
+            }
+        }
+
+        return array(
+          'price' => $this->_formatPrice($price),
+          'specialPrice' => $this->_formatPrice($specialPrice)
+        );
+    }
+
+    /**
+     * Returns an array with the regular price and special price
+     *
+     * @param  $product
+     * @return array $pricing
+    */
+    private function _getSimplePrice($product)
+    {
+        $price = $product->getPrice();
+        $specialPrice = $product->getSpecialPrice();
+
+        return array(
+          'price' => $this->_formatPrice($price),
+          'specialPrice' => $this->_formatPrice($specialPrice)
+        );
+    }
+
+    /**
+     * Returns a number value with two decimals and no thousands separator
+     *
+     * @param  $price
+     * @return $formatted_price
+    */
+    private function _formatPrice($price) {
+        return $price ? number_format($price, 2, ".", "") : null;
     }
 
     private function _getConfigurableTypeInstance()

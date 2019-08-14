@@ -106,6 +106,15 @@
                             <show_in_store>0</show_in_store>
                             <source_model>cosmiccart_integration/system_config_source_environment</source_model>
                         </environment>
+                        <logging_level translate="label">
+                            <label>Logging Level</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <source_model>cosmiccart_integration/system_config_source_logginglevel</source_model>
+                        </logging_level>
                     </fields>
                 </options>
                 <export_opt translate="label" module="cosmiccart_integration">
@@ -143,6 +152,16 @@
                             <comment>Code of attribute which represents UPC/EAN</comment>
                             <backend_model>cosmiccart_integration/adminhtml_system_config_ean</backend_model>
                         </ean_attr_code>
+                        <configurable_pricing translate="label">
+                            <label>Configurable Product Pricing</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Use the default configurable price plus option prices or the simple product price for variants</comment>
+                            <source_model>cosmiccart_integration/system_config_source_configurablepricing</source_model>
+                        </configurable_pricing>
                     </fields>
                 </export_opt>
             </groups>

@@ -15,20 +15,20 @@ class CosmicCart_Integration_Model_Adminhtml_System_Config_Ean extends Mage_Core
 	public function save()
 	{
 		$ean = $this->getValue();
-		
+
 		// Using the SKU as the attribute causes a SQL error
 		if (strtolower($ean) == "sku") {
-			Mage::throwException("SKU cannot be used as the EAN/UPC attribute."); 	
+			Mage::throwException("SKU cannot be used as the EAN/UPC attribute.");
 		}
-		
+
 		// Check to see if the attribute they entered is a valid attribute
 		$attr = Mage::getResourceModel('catalog/eav_attribute')
 				->loadByCode('catalog_product',$ean);
 
-		if (!$attr->getId()) {
-			Mage::throwException($ean . ' is not a valid attribute.'); 	
+		if (!$attr->getId() && ($ean != "")) {
+			Mage::throwException($ean . ' is not a valid attribute.');
 		}
-		
-		return parent::save(); 
+
+		return parent::save();
 	}
 }

@@ -10,4 +10,20 @@
             <block type="cosmiccart_integration/adminhtml_cosmiccart" name="cosmiccart"/>
         </reference>
     </adminhtml_integration_batch_index>
+
+    <adminhtml_cosmiccart_logger_index>
+        <reference name="menu">
+            <action method="setActive">
+                <menupath>cosmiccart/logviewer</menupath>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="cosmiccart_integration/adminhtml_log" name="log" />
+        </reference>
+    </adminhtml_cosmiccart_logger_index>
+    <adminhtml_cosmiccart_logger_grid>
+        <block type="core/text_list" name="root" output="toHtml">
+            <block type="cosmiccart_integration/adminhtml_log_grid" name="log_grid"/>
+        </block>
+    </adminhtml_cosmiccart_logger_grid>
 </layout>
