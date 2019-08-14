@@ -1,0 +1,71 @@
+<div class="content-header">
+    <table cellspacing="0" class="grid-header">
+        <tr>
+            <td><h3><?php echo $this->__('activation.title') ?></h3></td>
+            <td class="a-right">
+                <button onclick="editForm.submit()" class="scalable save" type="button"><span><?php echo $this->__('activation.submit') ?></span></button>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="entry-edit">
+    <?php if ($this->getData('activated')) { ?>
+        <div style="color:#009900;font-size:16px;margin-bottom:10px"><?php echo $this->__('activation.complete') ?></div>
+    <?php } ?>
+    <form id="edit_form" name="edit_form" method="post" action="<?php echo $this->getUrl('*/*/post') ?>">
+        <input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('activation.api.title') ?></h4>
+        <fieldset id="my-fieldset">
+            <table cellspacing="0" class="form-list">
+                <tr>
+                    <td class="label"><?php echo $this->__('activation.api.client') ?> <span class="required">*</span></td>
+                    <td class="input-ele"><input type="text" class="input-text required-entry" name="clientId" /></td>
+                </tr>
+                <tr>
+                    <td class="label"><?php echo $this->__('activation.api.secret') ?> <span class="required">*</span></td>
+                    <td class="input-ele"><input type="text" class="input-text required-entry" name="clientSecret" /></td>
+                </tr>
+                <tr>
+                    <td class="label"><?php echo $this->__('activation.api.username') ?> <span class="required">*</span></td>
+                    <td class="input-ele"><input type="text" class="input-text required-entry" name="username" /></td>
+                </tr>
+                <tr>
+                    <td class="label"><?php echo $this->__('activation.api.password') ?> <span class="required">*</span></td>
+                    <td class="input-ele"><input type="password" class="input-text required-entry" name="password" /></td>
+                </tr>
+                <tr>
+                    <td class="label"><?php echo $this->__('activation.api.store') ?> <span class="required">*</span></td>
+                    <td class="input-ele">
+                        <div class="tree-store-scope">
+                            <?php foreach ($this->getWebsiteCollection() as $_website): ?>
+                                <?php $showWebsite = false; ?>
+                                <?php foreach ($this->getGroupCollection($_website) as $_group): ?>
+                                    <?php $showGroup = false; ?>
+                                    <?php foreach ($this->getStoreCollection($_group) as $_store): ?>
+                                        <?php if ($showWebsite == false): ?>
+                                            <?php $showWebsite = true; ?>
+                                            <h3><?php echo $this->escapeHtml($_website->getName()) ?></h3>
+                                        <?php endif; ?>
+                                        <?php if ($showGroup == false): ?>
+                                            <?php $showGroup = true; ?>
+                                            <h4 style="margin-left:12px;"><?php echo $this->escapeHtml($_group->getName()) ?></h4>
+                                        <?php endif; ?>
+                                        <span class="field-row" style="margin-left:28px;">
+                                            <input type="radio" name='store' id="store_<?php echo $_store->getId() ?>" class="radio validate-one-required-by-name" value="<?php echo $_store->getId(); ?>"/>
+                                            <label for="store_<?php echo $_store->getId() ?>" class="inline"><?php echo $this->escapeHtml($_store->getName()) ?></label>
+                                        </span>
+                                    <?php endforeach; ?>
+                                    <?php if ($showGroup): ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    var editForm = new varienForm('edit_form');
+</script>

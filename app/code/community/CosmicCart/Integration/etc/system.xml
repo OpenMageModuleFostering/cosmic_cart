@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <tabs>
+        <cosmiccart translate="label" module="cosmiccart_integration">
+            <label>Cosmic Cart</label>
+            <sort_order>100</sort_order>
+        </cosmiccart>
+    </tabs>
+    <sections>
+        <payment>
+            <groups>
+                <cosmiccart translate="label" module="cosmiccart_integration">
+                    <label>Cosmic Cart Payment</label>
+                    <sort_order>670</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <order_status translate="label">
+                            <label>New Order Status</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_new</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_status>
+                    </fields>
+                </cosmiccart>
+            </groups>
+        </payment>
+        <cosmiccart translate="label" module="cosmiccart_integration">
+            <label>Cosmic Cart Options</label>
+            <tab>cosmiccart</tab>
+            <sort_order>1000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>0</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <configurable_cron translate="label">
+                    <label>Cron Schedule</label>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <enable>
+                            <label>Enable daily export</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enable>
+                        <time translate="label">
+                            <label>Start Time</label>
+                            <frontend_type>time</frontend_type>
+                            <backend_model>cosmiccart_integration/adminhtml_system_config_backend_dynamic_cron
+                            </backend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Daily time when new export batch will be generated</comment>
+                        </time>
+                    </fields>
+                </configurable_cron>
+                <options translate="label" module="cosmiccart_integration">
+                    <label>Cosmic Cart Options</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <payment_method translate="label">
+                            <label>Payment method</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>cosmiccart_integration/adminhtml_system_config_source_payment</source_model>
+                            <comment>Payment method that will be used for CosmicCart transactions</comment>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </payment_method>
+                        <debug translate="label">
+                            <label>Debug Mode</label>
+                            <comment>Enables debug mode for installations where you are either unable or do not wish to
+                                connect to Cosmic Cart's production server. NOTE: Activations from a non-production
+                                Magento environment will be rejected by Cosmic Cart's production server.
+                            </comment>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </debug>
+                        <environment translate="label">
+                            <label>Environment</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <source_model>cosmiccart_integration/system_config_source_environment</source_model>
+                        </environment>
+                    </fields>
+                </options>
+                <export_opt translate="label" module="cosmiccart_integration">
+                    <label>Export Options</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <max_batch_size translate="label">
+                            <label>Max Batch Size</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </max_batch_size>
+                        <brand_attr_code translate="label">
+                            <label>"Brand" attribute code</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Code of attribute which represents product brand</comment>
+                        </brand_attr_code>
+                        <ean_attr_code translate="label">
+                            <label>"UPC/EAN" attribute code</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Code of attribute which represents UPC/EAN</comment>
+                            <backend_model>cosmiccart_integration/adminhtml_system_config_ean</backend_model>
+                        </ean_attr_code>
+                    </fields>
+                </export_opt>
+            </groups>
+        </cosmiccart>
+    </sections>
+</config>

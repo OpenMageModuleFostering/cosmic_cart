@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<CosmicCart_Integration>
+			<version>2.0.5</version>
+		</CosmicCart_Integration>
+	</modules>
+
+	<global>
+		<models>
+			<cosmiccart_integration>
+				<class>CosmicCart_Integration_Model</class>
+				<resourceModel>cosmiccart_integration_resource</resourceModel>
+			</cosmiccart_integration>
+			<cosmiccart_integration_resource>
+				<class>CosmicCart_Integration_Model_Resource</class>
+				<entities>
+					<accessToken>
+						<table>cosmiccart_integration_access_token</table>
+					</accessToken>
+					<client>
+						<table>cosmiccart_integration_client</table>
+					</client>
+					<batch>
+						<table>cosmiccart_batch_status</table>
+					</batch>
+				</entities>
+			</cosmiccart_integration_resource>
+		</models>
+		<resources>
+			<cosmiccart_integration_setup>
+				<setup>
+					<module>CosmicCart_Integration</module>
+					<class>CosmicCart_Integration_Model_Resource_Setup</class>
+				</setup>
+			</cosmiccart_integration_setup>
+		</resources>
+		<helpers>
+			<cosmiccart_integration>
+				<class>CosmicCart_Integration_Helper</class>
+			</cosmiccart_integration>
+		</helpers>
+		<blocks>
+			<cosmiccart_integration>
+				<class>CosmicCart_Integration_Block</class>
+			</cosmiccart_integration>
+		</blocks>
+		<events>
+			<sales_order_shipment_save_after>
+				<observers>
+					<cosmiccart_integration_shipment_observer>
+						<class>cosmiccart_integration/observer</class>
+						<method>onSalesOrderShipmentSaveAfter</method>
+					</cosmiccart_integration_shipment_observer>
+				</observers>
+			</sales_order_shipment_save_after>
+			<sales_order_creditmemo_refund>
+				<observers>
+					<cosmiccart_integration_creditmemo_observer>
+						<class>cosmiccart_integration/observer</class>
+						<method>onSalesOrderCreditmemoRefund</method>
+					</cosmiccart_integration_creditmemo_observer>
+				</observers>
+			</sales_order_creditmemo_refund>
+		</events>
+		<template>
+			<email>
+				<cosmiccart_integration_package_shipped_tpl translate="label" module="cosmiccart_integration">
+					<label>Package Shipped Email</label>
+					<file>cosmiccart/package_shipped.html</file>
+					<type>html</type>
+				</cosmiccart_integration_package_shipped_tpl>
+				<cosmiccart_integration_refund_exception_tpl translate="label" module="cosmiccart_integration">
+					<label>Refund Exception Email</label>
+					<file>cosmiccart/refund_exception.html</file>
+					<type>html</type>
+				</cosmiccart_integration_refund_exception_tpl>
+				<cosmiccart_integration_import_exception_tpl translate="label" module="cosmiccart_integration">
+					<label>Catalog Import Exception Email</label>
+					<file>cosmiccart/import_exception.html</file>
+					<type>html</type>
+				</cosmiccart_integration_import_exception_tpl>
+				<cosmiccart_integration_generic_error_tpl translate="label" module="cosmiccart_integration">
+					<label>Generic Error Email</label>
+					<file>cosmiccart/generic_error.html</file>
+					<type>html</type>
+				</cosmiccart_integration_generic_error_tpl>
+			</email>
+		</template>
+	</global>
+	<admin>
+		<routers>
+			<adminhtml>
+				<args>
+					<modules>
+						<integration before="Mage_Adminhtml">CosmicCart_Integration_Adminhtml</integration>
+					</modules>
+				</args>
+			</adminhtml>
+		</routers>
+	</admin>
+	<adminhtml>
+		<acl>
+			<resources>
+				<admin>
+					<children>
+						<integration translate="title" module="cosmiccart_integration">
+							<children>
+								<integration_activation>
+									<title>Activation</title>
+								</integration_activation>
+							</children>
+							<sort_order>1</sort_order>
+						</integration>
+						<system>
+							<children>
+								<config>
+									<children>
+										<cosmiccart>
+											<title>Cosmic Cart Section</title>
+										</cosmiccart>
+									</children>
+								</config>
+							</children>
+						</system>
+					</children>
+				</admin>
+			</resources>
+		</acl>
+		<menu>
+			<cosmiccart module="cosmiccart_integration">
+				<title>Cosmic Cart</title>
+				<sort_order>100</sort_order>
+				<children>
+					<integration_activation module="cosmiccart_integration">
+						<title>Activation</title>
+						<sort_order>1</sort_order>
+						<action>adminhtml/integration_activation</action>
+					</integration_activation>
+					<integration_batch module="cosmiccart_integration">
+						<title>Batch Process</title>
+						<sort_order>2</sort_order>
+						<action>adminhtml/integration_batch</action>
+					</integration_batch>
+				</children>
+			</cosmiccart>
+		</menu>
+		<translate>
+			<modules>
+				<integration>
+					<files>
+						<default>CosmicCart_Integration.csv</default>
+					</files>
+				</integration>
+			</modules>
+		</translate>
+		<layout>
+			<updates>
+				<integration>
+					<file>cosmiccart/integration.xml</file>
+				</integration>
+			</updates>
+		</layout>
+	</adminhtml>
+	<default>
+		<payment>
+			<cosmiccart>
+				<model>CosmicCart_Integration_Model_Pay</model>
+				<active>1</active>
+				<order_status>Processing</order_status>
+				<title>Cosmic Cart</title>
+				<payment_action>sale</payment_action>
+			</cosmiccart>
+		</payment>
+	</default>
+	<crontab>
+		<jobs>
+			<integration_cosmiccart_generate_batch>
+				<run>
+					<model>cosmiccart_integration/exporter::generateBatch</model>
+				</run>
+			</integration_cosmiccart_generate_batch>
+			<integration_cosmiccart_export>
+				<schedule>
+					<cron_expr>*/5 * * * *</cron_expr>
+				</schedule>
+				<run>
+					<model>cosmiccart_integration/exporter::cronprocess</model>
+				</run>
+			</integration_cosmiccart_export>
+		</jobs>
+	</crontab>
+	<default>
+		<cosmiccart>
+			<configurable_cron>
+				<enable>1</enable>
+				<time>01,00,00</time>
+			</configurable_cron>
+			<options>
+				<debug>0</debug>
+				<payment_method>cosmiccart</payment_method>
+				<environment>1</environment>
+				<staging_api_url><![CDATA[https://staging.cosmiccart.com/api]]></staging_api_url>
+				<staging_api_sftp><![CDATA[sftp.staging.cosmiccart.com]]></staging_api_sftp>
+				<production_api_url><![CDATA[https://cosmiccart.com/api]]></production_api_url>
+				<production_api_sftp><![CDATA[sftp.cosmiccart.com]]></production_api_sftp>
+				<local_api_url><![CDATA[https://local.cosmiccart.com/api]]></local_api_url>
+				<local_api_sftp><![CDATA[sftp.staging.cosmiccart.com]]></local_api_sftp>
+			</options>
+			<export_opt>
+				<max_batch_size>3000</max_batch_size>
+			</export_opt>
+		</cosmiccart>
+		<crontab>
+			<jobs>
+				<integration_cosmiccart_generate_batch>
+					<schedule>
+						<cron_expr>0 1 * * *</cron_expr>
+					</schedule>
+				</integration_cosmiccart_generate_batch>
+			</jobs>
+		</crontab>
+		<payment>
+			<cosmiccart>
+				<order_status>pending</order_status>
+			</cosmiccart>
+		</payment>
+	</default>
+</config>

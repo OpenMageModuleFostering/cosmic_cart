@@ -1,0 +1,18 @@
+<div>
+	<h1>Fallback Email</h1>
+
+	<h2>Package Shipment Failure for SubOrder #{{var subOrderId}} on {{var shipDate}}</h2>
+
+	<p>The seller tried to ship the following package, but we couldn't reach the Cosmic Cart API.</p>
+
+	<h3>The Package</h3>
+
+	<p>
+	<pre id="json" style="color:#0000ff">{{var json}}</pre>
+	</p>
+	<h3>The Exception</h3>
+
+	<p>
+	<pre id="exception" style="color:red">{{var exception}}</pre>
+	</p>
+</div>

@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/Cosmic_Cart",
+    "type": "magento-module",
+    "license": "CosmicCart-Software-License",
+    "homepage": "",
+    "description": "Cosmic Cart",
+    "authors": [
+    {
+        "name": "Cosmic Cart, Inc.",
+        "email": "info@cosmiccart.com"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}

@@ -1,0 +1,13 @@
+<layout>
+    <adminhtml_integration_activation_index>
+        <!--<update handle="integration_activation_index"/>-->
+        <reference name="content">
+            <block type="cosmiccart_integration/adminhtml_storeselect" name="activation" template="cosmiccart/activation.phtml"/>
+        </reference>
+    </adminhtml_integration_activation_index>
+    <adminhtml_integration_batch_index>
+        <reference name="content">
+            <block type="cosmiccart_integration/adminhtml_cosmiccart" name="cosmiccart"/>
+        </reference>
+    </adminhtml_integration_batch_index>
+</layout>
